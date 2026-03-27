@@ -45,7 +45,7 @@
 // Fase 2: meerdere potentiometers
 // Zet hieronder het aantal ADC kanalen dat je in CubeMX hebt geconfigureerd.
 // (ADC scan mode enable + NbrOfConversion = POT_COUNT)
-#define POT_COUNT     4
+#define POT_COUNT     2
 
 // MIDI CC mapping per potentiometer (0..POT_COUNT-1)
 #define MIDI_CC_POT1  16
@@ -111,9 +111,7 @@ static uint8_t pot_cc(uint8_t index)
   {
     case 0: return MIDI_CC_POT1;
     case 1: return MIDI_CC_POT2;
-    case 2: return MIDI_CC_POT3;
-    case 3: return MIDI_CC_POT4;
-    default: return MIDI_CC_POT1;
+    default: return 0;
   }
 }
 
@@ -130,8 +128,12 @@ void process_potentiometer(void) {
 
       if (diff >= HYSTERESIS)
       {
-        uint8_t msg[3] = { 0xB0, pot_cc(i), new_value };
-        tud_midi_stream_write(0, msg, 3);
+        uint8_t cc = pot_cc(i);
+        if (cc != 0)
+        {
+          uint8_t msg[3] = { 0xB0, cc, new_value };
+          tud_midi_stream_write(0, msg, 3);
+        }
         last_midi_values[i] = new_value;
       }
     }
@@ -692,7 +694,6 @@ void midi_task(void)
   // diag=1: slow heartbeat (1 Hz)
   // diag=2/3: fast blink (4 Hz)
   static uint32_t led_ms = 0;
-  static uint32_t midi_hb_ms = 0;
   uint32_t now = HAL_GetTick();
 
   uint8_t diag = Matrix_GetDiag();
@@ -703,19 +704,7 @@ void midi_task(void)
     HAL_GPIO_TogglePin(LED_STATUS_GPIO_Port, LED_STATUS_Pin);
   }
 
-  // MIDI heartbeat (once per second) so you can verify in MidiView that the device is sending.
-  // Sends Control Change #20 with value = diag (0..3).
-  if (tud_mounted() && (now - midi_hb_ms) > 1000)
-  {
-    midi_hb_ms = now;
-    uint8_t cable_num = 0;
-    uint8_t channel = 0;
-    // Build ID: CC#19 (0..127)
-    uint8_t cc_build[3] = { (uint8_t)(0xB0 | channel), 19, build_id };
-    tud_midi_stream_write(cable_num, cc_build, 3);
-    uint8_t cc_msg[3] = { (uint8_t)(0xB0 | channel), 20, diag };
-    tud_midi_stream_write(cable_num, cc_msg, 3);
-  }
+  // MIDI heartbeat/diagnose CC's disabled: we only want potentiometer CC output.
 #else
   // Test mode: auto Note On/Off every second (original working MIDI)
   static uint32_t start_ms = 0;

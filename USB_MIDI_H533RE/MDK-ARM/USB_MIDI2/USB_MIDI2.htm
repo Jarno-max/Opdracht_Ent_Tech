@@ -3,7 +3,7 @@
 <title>Static Call Graph - [USB_MIDI2\USB_MIDI2.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image USB_MIDI2\USB_MIDI2.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 6220000: Last Updated: Fri Mar 27 11:21:04 2026
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 6220000: Last Updated: Fri Mar 27 11:40:04 2026
 <BR><P>
 <H3>Maximum Stack Usage =       1016 bytes + Unknown(Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -1983,15 +1983,13 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[8f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__rt_entry_main
 </UL>
 
-<P><STRONG><a name="[17e]"></a>midi_task</STRONG> (Thumb, 478 bytes, Stack size 80 bytes, main.o(.text.midi_task))
-<BR><BR>[Stack]<UL><LI>Max Depth = 848<LI>Call Chain = midi_task &rArr; tud_midi_n_stream_write &rArr; tu_edpt_stream_write &rArr; tu_edpt_stream_write_xfer &rArr; stream_xfer &rArr; usbd_edpt_xfer &rArr; dcd_edpt_xfer &rArr; edpt_xfer &rArr; dcd_transmit_packet &rArr; tu_fifo_read_n_access_mode &rArr; tu_fifo_peek_n_access_mode &rArr; hwff_pull_n &rArr; tu_hwfifo_write
+<P><STRONG><a name="[17e]"></a>midi_task</STRONG> (Thumb, 300 bytes, Stack size 40 bytes, main.o(.text.midi_task))
+<BR><BR>[Stack]<UL><LI>Max Depth = 736<LI>Call Chain = midi_task &rArr; tud_midi_n_packet_read &rArr; tu_edpt_stream_read &rArr; tu_edpt_stream_read_xfer &rArr; stream_xfer &rArr; usbd_edpt_xfer &rArr; dcd_edpt_xfer &rArr; edpt_xfer &rArr; dcd_transmit_packet &rArr; tu_fifo_read_n_access_mode &rArr; tu_fifo_peek_n_access_mode &rArr; hwff_pull_n &rArr; tu_hwfifo_write
 </UL>
 <BR>[Calls]<UL><LI><a href="#[182]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;tud_midi_n_packet_read
 <LI><a href="#[181]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;tud_midi_n_available
 <LI><a href="#[144]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GPIO_TogglePin
 <LI><a href="#[a6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GetTick
-<LI><a href="#[13e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;tud_midi_n_stream_write
-<LI><a href="#[13d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;tud_mounted
 <LI><a href="#[183]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Matrix_GetDiag
 </UL>
 <BR>[Called By]<UL><LI><a href="#[90]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
@@ -2050,7 +2048,7 @@ Global Symbols
 <LI><a href="#[160]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;dcd_pma_alloc
 </UL>
 
-<P><STRONG><a name="[180]"></a>process_potentiometer</STRONG> (Thumb, 204 bytes, Stack size 32 bytes, main.o(.text.process_potentiometer))
+<P><STRONG><a name="[180]"></a>process_potentiometer</STRONG> (Thumb, 220 bytes, Stack size 32 bytes, main.o(.text.process_potentiometer))
 <BR><BR>[Stack]<UL><LI>Max Depth = 800<LI>Call Chain = process_potentiometer &rArr; tud_midi_n_stream_write &rArr; tu_edpt_stream_write &rArr; tu_edpt_stream_write_xfer &rArr; stream_xfer &rArr; usbd_edpt_xfer &rArr; dcd_edpt_xfer &rArr; edpt_xfer &rArr; dcd_transmit_packet &rArr; tu_fifo_read_n_access_mode &rArr; tu_fifo_peek_n_access_mode &rArr; hwff_pull_n &rArr; tu_hwfifo_write
 </UL>
 <BR>[Calls]<UL><LI><a href="#[19d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;tud_midi_n_mounted
@@ -2301,8 +2299,7 @@ Global Symbols
 <LI><a href="#[1a9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;tu_edpt_stream_write
 <LI><a href="#[189]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;tu_edpt_stream_write_xfer
 </UL>
-<BR>[Called By]<UL><LI><a href="#[17e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;midi_task
-<LI><a href="#[180]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;process_potentiometer
+<BR>[Called By]<UL><LI><a href="#[180]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;process_potentiometer
 <LI><a href="#[141]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Matrix_Scan
 <LI><a href="#[13b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Matrix_Init
 <LI><a href="#[140]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Matrix_ReportConfig
@@ -2321,8 +2318,7 @@ Global Symbols
 </UL>
 
 <P><STRONG><a name="[13d]"></a>tud_mounted</STRONG> (Thumb, 18 bytes, Stack size 0 bytes, usbd.o(.text.tud_mounted))
-<BR><BR>[Called By]<UL><LI><a href="#[17e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;midi_task
-<LI><a href="#[90]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
+<BR><BR>[Called By]<UL><LI><a href="#[90]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 <LI><a href="#[141]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Matrix_Scan
 <LI><a href="#[13b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Matrix_Init
 <LI><a href="#[140]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Matrix_ReportConfig
@@ -2620,7 +2616,7 @@ Local Symbols
 <BR>[Called By]<UL><LI><a href="#[142]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Matrix_TryLockFromScan
 </UL>
 
-<P><STRONG><a name="[19e]"></a>pot_cc</STRONG> (Thumb, 76 bytes, Stack size 8 bytes, main.o(.text.pot_cc))
+<P><STRONG><a name="[19e]"></a>pot_cc</STRONG> (Thumb, 58 bytes, Stack size 8 bytes, main.o(.text.pot_cc))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = pot_cc
 </UL>
 <BR>[Called By]<UL><LI><a href="#[180]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;process_potentiometer
