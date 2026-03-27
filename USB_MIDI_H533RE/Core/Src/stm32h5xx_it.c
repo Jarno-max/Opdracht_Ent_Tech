@@ -269,6 +269,7 @@ void USB_DRD_FS_IRQHandler(void)
   // TinyUSB interrupt handler
   extern void dcd_int_handler(uint8_t rhport);
   dcd_int_handler(0);
+  return; // Zorg dat de standaard HAL handler niet ook nog wordt aangeroepen
   /* USER CODE END USB_DRD_FS_IRQn 0 */
   HAL_PCD_IRQHandler(&hpcd_USB_DRD_FS);
   /* USER CODE BEGIN USB_DRD_FS_IRQn 1 */

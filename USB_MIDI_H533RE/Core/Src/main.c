@@ -40,7 +40,8 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-
+#define HYSTERESIS    2
+#define MIDI_CC_POT1  16
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -63,7 +64,9 @@ TIM_HandleTypeDef htim6;
 PCD_HandleTypeDef hpcd_USB_DRD_FS;
 
 /* USER CODE BEGIN PV */
-
+// Enkele ADC waarde - wordt continu gevuld door DMA
+volatile uint8_t adc_value;
+uint8_t last_midi_value = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -79,11 +82,37 @@ static void MX_TIM6_Init(void);
 /* USER CODE BEGIN PFP */
 extern void tusb_hal_init(void);
 void midi_task(void);
+void ADC_Start(void);
+void process_potentiometer(void);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+void ADC_Start(void) {
+    // Start the timer to trigger ADC
+    HAL_TIM_Base_Start(&htim6);
+    // Start ADC conversion on continuous DMA request
+    HAL_ADC_Start_DMA(&hadc1, (uint32_t*)&adc_value, 1);
+}
 
+void process_potentiometer(void) {
+    // De ADC resolutie in CubeMX staat op 8-bits (0-255). 
+    // We bitshiften ">> 1" om hem te delen door 2. Hierdoor wordt de bereik 0-127 (7-bit MIDI spec)
+    uint8_t new_value = adc_value >> 1; 
+
+    // We checken de verschuiving om "stilstaan / jitter" (ruis) uit te filteren d.m.v. een Hysteresis
+    int16_t diff = (int16_t)new_value - (int16_t)last_midi_value;
+    if (diff < 0) diff = -diff;
+
+    if (diff >= HYSTERESIS) {
+        if (tud_midi_mounted()) {
+            // MIDI Control Change bericht: 0xB0 (CC Kanaal 1), Controller Nummer, Waarde
+            uint8_t msg[3] = { 0xB0, MIDI_CC_POT1, new_value };
+            tud_midi_stream_write(0, msg, 3);
+        }
+        last_midi_value = new_value;
+    }
+}
 /* USER CODE END 0 */
 
 /**
@@ -134,6 +163,7 @@ int main(void)
 
   // SPI is already initialized by CubeMX/HAL. We only START using it after USB is mounted.
 
+  ADC_Start(); // Start de timer en ADC voor Fase 1
   /* USER CODE END 2 */
 
   /* Initialize USER push-button, will be used to trigger an interrupt each time it's pressed.*/
@@ -218,6 +248,9 @@ int main(void)
 
     // Drain incoming MIDI + LED heartbeat
     midi_task();
+
+    // Verwerk en verzend de potentiometer CC berichten
+    process_potentiometer();
   }
   /* USER CODE END 3 */
 }
