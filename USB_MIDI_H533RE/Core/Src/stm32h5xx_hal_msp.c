@@ -111,8 +111,9 @@ void HAL_ADC_MspInit(ADC_HandleTypeDef* hadc)
     __HAL_RCC_GPIOA_CLK_ENABLE();
     /**ADC1 GPIO Configuration
     PA0     ------> ADC1_INP0
+    PA1     ------> ADC1_INP1
     */
-    GPIO_InitStruct.Pin = GPIO_PIN_0;
+    GPIO_InitStruct.Pin = GPIO_PIN_0|GPIO_PIN_1;
     GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
@@ -124,7 +125,7 @@ void HAL_ADC_MspInit(ADC_HandleTypeDef* hadc)
     NodeConfig.Init.BlkHWRequest = DMA_BREQ_SINGLE_BURST;
     NodeConfig.Init.Direction = DMA_PERIPH_TO_MEMORY;
     NodeConfig.Init.SrcInc = DMA_SINC_FIXED;
-    NodeConfig.Init.DestInc = DMA_DINC_FIXED;
+    NodeConfig.Init.DestInc = DMA_DINC_INCREMENTED;
     NodeConfig.Init.SrcDataWidth = DMA_SRC_DATAWIDTH_BYTE;
     NodeConfig.Init.DestDataWidth = DMA_DEST_DATAWIDTH_BYTE;
     NodeConfig.Init.SrcBurstLength = 1;
@@ -202,8 +203,9 @@ void HAL_ADC_MspDeInit(ADC_HandleTypeDef* hadc)
 
     /**ADC1 GPIO Configuration
     PA0     ------> ADC1_INP0
+    PA1     ------> ADC1_INP1
     */
-    HAL_GPIO_DeInit(GPIOA, GPIO_PIN_0);
+    HAL_GPIO_DeInit(GPIOA, GPIO_PIN_0|GPIO_PIN_1);
 
     /* ADC1 DMA DeInit */
     HAL_DMA_DeInit(hadc->DMA_Handle);
@@ -373,7 +375,6 @@ void HAL_PCD_MspInit(PCD_HandleTypeDef* hpcd)
   RCC_PeriphCLKInitTypeDef PeriphClkInitStruct = {0};
   if(hpcd->Instance==USB_DRD_FS)
   {
-    GPIO_InitTypeDef GPIO_InitStruct = {0};
     /* USER CODE BEGIN USB_DRD_FS_MspInit 0 */
 
     /* USER CODE END USB_DRD_FS_MspInit 0 */
@@ -389,16 +390,6 @@ void HAL_PCD_MspInit(PCD_HandleTypeDef* hpcd)
 
     /* Enable VDDUSB */
     HAL_PWREx_EnableVddUSB();
-
-    /* Enable GPIO clock + configure USB FS pins (DP/DM) */
-    __HAL_RCC_GPIOA_CLK_ENABLE();
-    GPIO_InitStruct.Pin = GPIO_PIN_11 | GPIO_PIN_12;
-    GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
-    GPIO_InitStruct.Pull = GPIO_NOPULL;
-    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
-    GPIO_InitStruct.Alternate = GPIO_AF10_USB;
-    HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-
     /* Peripheral clock enable */
     __HAL_RCC_USB_CLK_ENABLE();
     /* USB_DRD_FS interrupt Init */

@@ -41,7 +41,17 @@
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
 #define HYSTERESIS    2
+
+// Fase 2: meerdere potentiometers
+// Zet hieronder het aantal ADC kanalen dat je in CubeMX hebt geconfigureerd.
+// (ADC scan mode enable + NbrOfConversion = POT_COUNT)
+#define POT_COUNT     4
+
+// MIDI CC mapping per potentiometer (0..POT_COUNT-1)
 #define MIDI_CC_POT1  16
+#define MIDI_CC_POT2  17
+#define MIDI_CC_POT3  18
+#define MIDI_CC_POT4  19
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -64,9 +74,9 @@ TIM_HandleTypeDef htim6;
 PCD_HandleTypeDef hpcd_USB_DRD_FS;
 
 /* USER CODE BEGIN PV */
-// Enkele ADC waarde - wordt continu gevuld door DMA
-volatile uint8_t adc_value;
-uint8_t last_midi_value = 0;
+// ADC waarden - worden continu gevuld door DMA (circular)
+volatile uint8_t adc_values[POT_COUNT];
+uint8_t last_midi_values[POT_COUNT] = {0};
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -92,25 +102,38 @@ void ADC_Start(void) {
     // Start the timer to trigger ADC
     HAL_TIM_Base_Start(&htim6);
     // Start ADC conversion on continuous DMA request
-    HAL_ADC_Start_DMA(&hadc1, (uint32_t*)&adc_value, 1);
+    HAL_ADC_Start_DMA(&hadc1, (uint32_t*)adc_values, POT_COUNT);
+}
+
+static uint8_t pot_cc(uint8_t index)
+{
+  switch (index)
+  {
+    case 0: return MIDI_CC_POT1;
+    case 1: return MIDI_CC_POT2;
+    case 2: return MIDI_CC_POT3;
+    case 3: return MIDI_CC_POT4;
+    default: return MIDI_CC_POT1;
+  }
 }
 
 void process_potentiometer(void) {
-    // De ADC resolutie in CubeMX staat op 8-bits (0-255). 
-    // We bitshiften ">> 1" om hem te delen door 2. Hierdoor wordt de bereik 0-127 (7-bit MIDI spec)
-    uint8_t new_value = adc_value >> 1; 
+    if (!tud_midi_mounted()) return;
 
-    // We checken de verschuiving om "stilstaan / jitter" (ruis) uit te filteren d.m.v. een Hysteresis
-    int16_t diff = (int16_t)new_value - (int16_t)last_midi_value;
-    if (diff < 0) diff = -diff;
+    for (uint8_t i = 0; i < POT_COUNT; i++)
+    {
+      // 8-bit (0-255) -> 7-bit MIDI (0-127)
+      uint8_t new_value = adc_values[i] >> 1;
 
-    if (diff >= HYSTERESIS) {
-        if (tud_midi_mounted()) {
-            // MIDI Control Change bericht: 0xB0 (CC Kanaal 1), Controller Nummer, Waarde
-            uint8_t msg[3] = { 0xB0, MIDI_CC_POT1, new_value };
-            tud_midi_stream_write(0, msg, 3);
-        }
-        last_midi_value = new_value;
+      int16_t diff = (int16_t)new_value - (int16_t)last_midi_values[i];
+      if (diff < 0) diff = -diff;
+
+      if (diff >= HYSTERESIS)
+      {
+        uint8_t msg[3] = { 0xB0, pot_cc(i), new_value };
+        tud_midi_stream_write(0, msg, 3);
+        last_midi_values[i] = new_value;
+      }
     }
 }
 /* USER CODE END 0 */
@@ -359,11 +382,11 @@ static void MX_ADC1_Init(void)
   hadc1.Init.ClockPrescaler = ADC_CLOCK_ASYNC_DIV4;
   hadc1.Init.Resolution = ADC_RESOLUTION_8B;
   hadc1.Init.DataAlign = ADC_DATAALIGN_RIGHT;
-  hadc1.Init.ScanConvMode = ADC_SCAN_DISABLE;
+  hadc1.Init.ScanConvMode = ADC_SCAN_ENABLE;
   hadc1.Init.EOCSelection = ADC_EOC_SINGLE_CONV;
   hadc1.Init.LowPowerAutoWait = DISABLE;
   hadc1.Init.ContinuousConvMode = DISABLE;
-  hadc1.Init.NbrOfConversion = 1;
+  hadc1.Init.NbrOfConversion = 2;
   hadc1.Init.DiscontinuousConvMode = DISABLE;
   hadc1.Init.ExternalTrigConv = ADC_EXTERNALTRIG_T6_TRGO;
   hadc1.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_RISING;
@@ -384,6 +407,15 @@ static void MX_ADC1_Init(void)
   sConfig.SingleDiff = ADC_SINGLE_ENDED;
   sConfig.OffsetNumber = ADC_OFFSET_NONE;
   sConfig.Offset = 0;
+  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+  /** Configure Regular Channel
+  */
+  sConfig.Channel = ADC_CHANNEL_1;
+  sConfig.Rank = ADC_REGULAR_RANK_2;
   if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
   {
     Error_Handler();
