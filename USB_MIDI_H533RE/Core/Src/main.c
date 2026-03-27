@@ -40,8 +40,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-#define HYSTERESIS    2
-#define MIDI_CC_POT1  16
+
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -64,9 +63,7 @@ TIM_HandleTypeDef htim6;
 PCD_HandleTypeDef hpcd_USB_DRD_FS;
 
 /* USER CODE BEGIN PV */
-// Enkele ADC waarde - wordt continu gevuld door DMA
-volatile uint8_t adc_value;
-uint8_t last_midi_value = 0;
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -82,31 +79,11 @@ static void MX_TIM6_Init(void);
 /* USER CODE BEGIN PFP */
 extern void tusb_hal_init(void);
 void midi_task(void);
-void ADC_Start(void);
-void process_potentiometer(void);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-void ADC_Start(void) {
-    HAL_TIM_Base_Start(&htim6);
-    HAL_ADC_Start_DMA(&hadc1, (uint32_t*)&adc_value, 1);
-}
 
-void process_potentiometer(void) {
-    uint8_t new_value = adc_value >> 1; // 8-bit naar 7-bit
-
-    int16_t diff = (int16_t)new_value - (int16_t)last_midi_value;
-    if (diff < 0) diff = -diff;
-
-    if (diff >= HYSTERESIS) {
-        if (tud_midi_mounted()) {
-            uint8_t msg[3] = { 0xB0, MIDI_CC_POT1, new_value };
-            tud_midi_stream_write(0, msg, 3);
-        }
-        last_midi_value = new_value;
-    }
-}
 /* USER CODE END 0 */
 
 /**
@@ -156,8 +133,6 @@ int main(void)
   tusb_hal_init();
 
   // SPI is already initialized by CubeMX/HAL. We only START using it after USB is mounted.
-
-  ADC_Start(); // Start de Timer trigger en de ADC via DMA
 
   /* USER CODE END 2 */
 
@@ -243,9 +218,6 @@ int main(void)
 
     // Drain incoming MIDI + LED heartbeat
     midi_task();
-
-    // Verwerk de potentiometer data en stuur indien nodig MIDI CC
-    process_potentiometer();
   }
   /* USER CODE END 3 */
 }
