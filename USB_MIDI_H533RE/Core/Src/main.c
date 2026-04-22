@@ -40,7 +40,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-#define HYSTERESIS    2
+#define HYSTERESIS    4
 
 // Fase 2: meerdere potentiometers
 // Zet hieronder het aantal ADC kanalen dat je in CubeMX hebt geconfigureerd.
@@ -480,7 +480,7 @@ static void MX_ADC1_Init(void)
 
   /** Configure Regular Channel
   */
-  sConfig.Channel = ADC_CHANNEL_18;
+  sConfig.Channel = ADC_CHANNEL_8;
   sConfig.Rank = ADC_REGULAR_RANK_8;
   if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
   {

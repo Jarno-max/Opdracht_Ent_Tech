@@ -3,7 +3,7 @@
 <title>Static Call Graph - [USB_MIDI2\USB_MIDI2.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image USB_MIDI2\USB_MIDI2.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 6220000: Last Updated: Fri Mar 27 11:40:04 2026
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 6220000: Last Updated: Wed Apr 22 16:33:02 2026
 <BR><P>
 <H3>Maximum Stack Usage =       1016 bytes + Unknown(Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -949,7 +949,7 @@ Global Symbols
 </UL>
 
 <P><STRONG><a name="[cf]"></a>HAL_ADC_Init</STRONG> (Thumb, 708 bytes, Stack size 40 bytes, stm32h5xx_hal_adc.o(.text.HAL_ADC_Init))
-<BR><BR>[Stack]<UL><LI>Max Depth = 560 + Unknown Stack Size
+<BR><BR>[Stack]<UL><LI>Max Depth = 576 + Unknown Stack Size
 <LI>Call Chain = HAL_ADC_Init &rArr; HAL_ADC_MspInit &rArr; HAL_RCCEx_PeriphCLKConfig &rArr; RCCEx_PLL3_Config
 </UL>
 <BR>[Calls]<UL><LI><a href="#[bb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_ADC_INJ_IsConversionOngoing
@@ -971,8 +971,8 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[9d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_ADC_IRQHandler
 </UL>
 
-<P><STRONG><a name="[d0]"></a>HAL_ADC_MspInit</STRONG> (Thumb, 420 bytes, Stack size 368 bytes, stm32h5xx_hal_msp.o(.text.HAL_ADC_MspInit))
-<BR><BR>[Stack]<UL><LI>Max Depth = 520 + Unknown Stack Size
+<P><STRONG><a name="[d0]"></a>HAL_ADC_MspInit</STRONG> (Thumb, 536 bytes, Stack size 384 bytes, stm32h5xx_hal_msp.o(.text.HAL_ADC_MspInit))
+<BR><BR>[Stack]<UL><LI>Max Depth = 536 + Unknown Stack Size
 <LI>Call Chain = HAL_ADC_MspInit &rArr; HAL_RCCEx_PeriphCLKConfig &rArr; RCCEx_PLL3_Config
 </UL>
 <BR>[Calls]<UL><LI><a href="#[de]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_DMA_ConfigChannelAttributes
@@ -2616,7 +2616,7 @@ Local Symbols
 <BR>[Called By]<UL><LI><a href="#[142]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Matrix_TryLockFromScan
 </UL>
 
-<P><STRONG><a name="[19e]"></a>pot_cc</STRONG> (Thumb, 58 bytes, Stack size 8 bytes, main.o(.text.pot_cc))
+<P><STRONG><a name="[19e]"></a>pot_cc</STRONG> (Thumb, 112 bytes, Stack size 8 bytes, main.o(.text.pot_cc))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = pot_cc
 </UL>
 <BR>[Called By]<UL><LI><a href="#[180]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;process_potentiometer
@@ -2660,8 +2660,8 @@ Local Symbols
 <BR>[Called By]<UL><LI><a href="#[90]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[131]"></a>MX_ADC1_Init</STRONG> (Thumb, 202 bytes, Stack size 48 bytes, main.o(.text.MX_ADC1_Init))
-<BR><BR>[Stack]<UL><LI>Max Depth = 608 + Unknown Stack Size
+<P><STRONG><a name="[131]"></a>MX_ADC1_Init</STRONG> (Thumb, 436 bytes, Stack size 48 bytes, main.o(.text.MX_ADC1_Init))
+<BR><BR>[Stack]<UL><LI>Max Depth = 624 + Unknown Stack Size
 <LI>Call Chain = MX_ADC1_Init &rArr; HAL_ADC_Init &rArr; HAL_ADC_MspInit &rArr; HAL_RCCEx_PeriphCLKConfig &rArr; RCCEx_PLL3_Config
 </UL>
 <BR>[Calls]<UL><LI><a href="#[b7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_ADC_ConfigChannel
