@@ -29,6 +29,8 @@ extern DMA_QListTypeDef List_GPDMA1_Channel0;
 
 extern DMA_HandleTypeDef handle_GPDMA1_Channel0;
 
+extern DMA_HandleTypeDef handle_GPDMA1_Channel1;
+
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN TD */
 
@@ -62,7 +64,9 @@ extern DMA_HandleTypeDef handle_GPDMA1_Channel0;
 /* USER CODE BEGIN 0 */
 
 /* USER CODE END 0 */
-/**
+
+void HAL_TIM_MspPostInit(TIM_HandleTypeDef *htim);
+                    /**
   * Initializes the Global MSP.
   */
 void HAL_MspInit(void)
@@ -118,7 +122,6 @@ void HAL_ADC_MspInit(ADC_HandleTypeDef* hadc)
     PC3     ------> ADC1_INP13
     PA0     ------> ADC1_INP0
     PA1     ------> ADC1_INP1
-    PC5     ------> ADC1_INN4
     PC5     ------> ADC1_INP8
     PB1     ------> ADC1_INP5
     */
@@ -228,7 +231,6 @@ void HAL_ADC_MspDeInit(ADC_HandleTypeDef* hadc)
     PC3     ------> ADC1_INP13
     PA0     ------> ADC1_INP0
     PA1     ------> ADC1_INP1
-    PC5     ------> ADC1_INN4
     PC5     ------> ADC1_INP8
     PB1     ------> ADC1_INP5
     */
@@ -353,7 +355,50 @@ void HAL_SPI_MspDeInit(SPI_HandleTypeDef* hspi)
   */
 void HAL_TIM_Base_MspInit(TIM_HandleTypeDef* htim_base)
 {
-  if(htim_base->Instance==TIM6)
+  if(htim_base->Instance==TIM3)
+  {
+    /* USER CODE BEGIN TIM3_MspInit 0 */
+
+    /* USER CODE END TIM3_MspInit 0 */
+    /* Peripheral clock enable */
+    __HAL_RCC_TIM3_CLK_ENABLE();
+
+    /* TIM3 DMA Init */
+    /* GPDMA1_REQUEST_TIM3_CH1 Init */
+    handle_GPDMA1_Channel1.Instance = GPDMA1_Channel1;
+    handle_GPDMA1_Channel1.Init.Request = GPDMA1_REQUEST_TIM3_CH1;
+    handle_GPDMA1_Channel1.Init.BlkHWRequest = DMA_BREQ_SINGLE_BURST;
+    handle_GPDMA1_Channel1.Init.Direction = DMA_MEMORY_TO_PERIPH;
+    handle_GPDMA1_Channel1.Init.SrcInc = DMA_SINC_INCREMENTED;
+    handle_GPDMA1_Channel1.Init.DestInc = DMA_DINC_FIXED;
+    handle_GPDMA1_Channel1.Init.SrcDataWidth = DMA_SRC_DATAWIDTH_HALFWORD;
+    handle_GPDMA1_Channel1.Init.DestDataWidth = DMA_DEST_DATAWIDTH_HALFWORD;
+    handle_GPDMA1_Channel1.Init.Priority = DMA_LOW_PRIORITY_LOW_WEIGHT;
+    handle_GPDMA1_Channel1.Init.SrcBurstLength = 1;
+    handle_GPDMA1_Channel1.Init.DestBurstLength = 1;
+    handle_GPDMA1_Channel1.Init.TransferAllocatedPort = DMA_SRC_ALLOCATED_PORT0|DMA_DEST_ALLOCATED_PORT0;
+    handle_GPDMA1_Channel1.Init.TransferEventMode = DMA_TCEM_BLOCK_TRANSFER;
+    handle_GPDMA1_Channel1.Init.Mode = DMA_NORMAL;
+    if (HAL_DMA_Init(&handle_GPDMA1_Channel1) != HAL_OK)
+    {
+      Error_Handler();
+    }
+
+    __HAL_LINKDMA(htim_base, hdma[TIM_DMA_ID_CC1], handle_GPDMA1_Channel1);
+
+    if (HAL_DMA_ConfigChannelAttributes(&handle_GPDMA1_Channel1, DMA_CHANNEL_NPRIV) != HAL_OK)
+    {
+      Error_Handler();
+    }
+
+    /* TIM3 interrupt Init */
+    HAL_NVIC_SetPriority(TIM3_IRQn, 0, 0);
+    HAL_NVIC_EnableIRQ(TIM3_IRQn);
+    /* USER CODE BEGIN TIM3_MspInit 1 */
+
+    /* USER CODE END TIM3_MspInit 1 */
+  }
+  else if(htim_base->Instance==TIM6)
   {
     /* USER CODE BEGIN TIM6_MspInit 0 */
 
@@ -366,11 +411,36 @@ void HAL_TIM_Base_MspInit(TIM_HandleTypeDef* htim_base)
     /* USER CODE BEGIN TIM6_MspInit 1 */
 
     /* USER CODE END TIM6_MspInit 1 */
-
   }
 
 }
 
+void HAL_TIM_MspPostInit(TIM_HandleTypeDef* htim)
+{
+  GPIO_InitTypeDef GPIO_InitStruct = {0};
+  if(htim->Instance==TIM3)
+  {
+    /* USER CODE BEGIN TIM3_MspPostInit 0 */
+
+    /* USER CODE END TIM3_MspPostInit 0 */
+
+    __HAL_RCC_GPIOC_CLK_ENABLE();
+    /**TIM3 GPIO Configuration
+    PC6     ------> TIM3_CH1
+    */
+    GPIO_InitStruct.Pin = GPIO_PIN_6;
+    GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+    GPIO_InitStruct.Alternate = GPIO_AF2_TIM3;
+    HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+
+    /* USER CODE BEGIN TIM3_MspPostInit 1 */
+
+    /* USER CODE END TIM3_MspPostInit 1 */
+  }
+
+}
 /**
   * @brief TIM_Base MSP De-Initialization
   * This function freeze the hardware resources used in this example
@@ -379,7 +449,24 @@ void HAL_TIM_Base_MspInit(TIM_HandleTypeDef* htim_base)
   */
 void HAL_TIM_Base_MspDeInit(TIM_HandleTypeDef* htim_base)
 {
-  if(htim_base->Instance==TIM6)
+  if(htim_base->Instance==TIM3)
+  {
+    /* USER CODE BEGIN TIM3_MspDeInit 0 */
+
+    /* USER CODE END TIM3_MspDeInit 0 */
+    /* Peripheral clock disable */
+    __HAL_RCC_TIM3_CLK_DISABLE();
+
+    /* TIM3 DMA DeInit */
+    HAL_DMA_DeInit(htim_base->hdma[TIM_DMA_ID_CC1]);
+
+    /* TIM3 interrupt DeInit */
+    HAL_NVIC_DisableIRQ(TIM3_IRQn);
+    /* USER CODE BEGIN TIM3_MspDeInit 1 */
+
+    /* USER CODE END TIM3_MspDeInit 1 */
+  }
+  else if(htim_base->Instance==TIM6)
   {
     /* USER CODE BEGIN TIM6_MspDeInit 0 */
 

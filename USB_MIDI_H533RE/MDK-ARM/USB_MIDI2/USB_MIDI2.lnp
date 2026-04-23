@@ -7,6 +7,7 @@
 "usb_midi2\main.o"
 "usb_midi2\stm32h5xx_it.o"
 "usb_midi2\stm32h5xx_hal_msp.o"
+"usb_midi2\sk6812.o"
 "usb_midi2\stm32h5xx_nucleo.o"
 "usb_midi2\stm32h5xx_hal_adc.o"
 "usb_midi2\stm32h5xx_hal_adc_ex.o"

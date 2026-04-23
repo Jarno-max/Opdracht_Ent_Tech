@@ -5,6 +5,7 @@
 #include "mcp23s17.h"
 #include "main.h"
 #include "tusb.h"
+#include "sk6812.h"
 
 // MCP23S17 registers
 #define IODIRA   0x00  // Port A direction (0=output, 1=input)
@@ -508,6 +509,25 @@ void Matrix_Scan(void) {
                 
                 // Send MIDI note (60-75)
                 SendNote(60 + btn, pressed);
+
+                // Opdracht 3: SK6812 LED feedback (met bonus: kleuren per rij)
+                if (pressed) {
+                    // Knop ingedrukt -> Kies kleur gebaseerd op rij (0-3)
+                    if (row == 0) {
+                        set_led_color(btn, 30, 0, 0);       // Rood
+                    } else if (row == 1) {
+                        set_led_color(btn, 0, 30, 0);       // Groen
+                    } else if (row == 2) {
+                        set_led_color(btn, 20, 0, 20);      // Paars/Magenta
+                    } else {
+                        set_led_color(btn, 25, 25, 0);      // Geel
+                    }
+                } else {
+                    // Knop losgelaten -> "Geen activiteit" (gedimd blauw)
+                    set_led_color(btn, 0, 0, 5); 
+                }
+                // Verzend de vernieuwde buffer via DMA naar de LEDs
+                sk6812_update();
 
                 // Visual feedback on any debounced event
                 HAL_GPIO_TogglePin(LED_STATUS_GPIO_Port, LED_STATUS_Pin);

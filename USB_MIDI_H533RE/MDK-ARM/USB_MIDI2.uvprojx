@@ -340,7 +340,7 @@
               <MiscControls></MiscControls>
               <Define>USE_NUCLEO_64,USE_HAL_DRIVER,STM32H533xx,CFG_TUSB_MCU=OPT_MCU_STM32H5,asm=__asm</Define>
               <Undefine></Undefine>
-              <IncludePath>../Core/Inc;../Drivers/STM32H5xx_HAL_Driver/Inc;../Drivers/STM32H5xx_HAL_Driver/Inc/Legacy;../Drivers/BSP/STM32H5xx_Nucleo;../Drivers/CMSIS/Device/ST/STM32H5xx/Include;../Drivers/CMSIS/Include;../Middlewares/tinyusb/src;../Middlewares/tinyusb/src/device;../Middlewares/tinyusb/src/class/midi;../Middlewares</IncludePath>
+              <IncludePath>../Core/Inc;../Drivers/STM32H5xx_HAL_Driver/Inc;../Drivers/STM32H5xx_HAL_Driver/Inc/Legacy;../Drivers/BSP/STM32H5xx_Nucleo;../Drivers/CMSIS/Device/ST/STM32H5xx/Include;../Drivers/CMSIS/Include;../Middlewares/tinyusb/src;../Middlewares/tinyusb/src/device;../Middlewares/tinyusb/src/class/midi;../Middlewares;..\MiddlewaresL</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -428,6 +428,11 @@
               <FileName>stm32h5xx_hal_msp.c</FileName>
               <FileType>1</FileType>
               <FilePath>../Core/Src/stm32h5xx_hal_msp.c</FilePath>
+            </File>
+            <File>
+              <FileName>sk6812.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Core\Src\sk6812.c</FilePath>
             </File>
           </Files>
         </Group>

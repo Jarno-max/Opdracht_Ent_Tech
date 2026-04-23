@@ -49,4 +49,5 @@ usb_midi2/main.o: ..\Core\Src\main.c ..\Core\Inc\main.h \
   ..\Middlewares\tinyusb\src\device\usbd.h \
   ..\Middlewares\tinyusb\src\class\midi\midi_device.h \
   ..\Middlewares\tinyusb\src\class\audio\audio.h \
-  ..\Middlewares\tinyusb\src\class\midi\midi.h ..\Core\Inc\mcp23s17.h
+  ..\Middlewares\tinyusb\src\class\midi\midi.h ..\Core\Inc\mcp23s17.h \
+  ..\Core\Inc\sk6812.h
